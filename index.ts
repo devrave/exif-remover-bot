@@ -17,7 +17,11 @@ if (!BOT_TOKEN) {
 
 const bot = new Telegraf(BOT_TOKEN);
 
-bot.start((ctx) => ctx.reply("Hi. Please send me a document from which you wanna delete sensitive EXIF data."));
+bot.start(async (context) => {
+  console.log(`/start ${context.from.id}`);
+
+  await context.reply("Hi. Please send me a document from which you wanna delete sensitive EXIF data.");
+});
 
 bot.on("photo", async (context) => {
   context.reply("A document, not a photo, please.");
@@ -28,6 +32,8 @@ bot.on("document", async (context) => {
   const fileID = document.file_id;
   const fileSize = document.file_size ?? 0;
   const fileURL = await context.telegram.getFileLink(fileID);
+
+  console.log(`/document from ${context.from.id}`);
 
   if (bytesToMegabytes(fileSize) > FILE_SIZE_LIMIT_IN_MB) {
     throw new BotError(`File is too large. Files larger than ${FILE_SIZE_LIMIT_IN_MB} MB are not currently supported.`);
@@ -56,10 +62,14 @@ bot.on("document", async (context) => {
 bot.catch(async (error, context) => {
   console.error(error);
 
-  if (error instanceof BotError) {
-    await context.reply(error.toString());
-  } else {
-    await context.reply("Something went wrong. Please, try later.");
+  try {
+    if (error instanceof BotError) {
+      await context.reply(error.toString());
+    } else {
+      await context.reply("Something went wrong. Please, try later.");
+    }
+  } catch (error) {
+    console.error(error);
   }
 });
 
