@@ -1,0 +1,28 @@
+{
+  "name": "exif-remover-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "build": "tsc",
+    "prettier": "prettier '**/*.ts' --write",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "~16.0.3",
+    "gm": "~1.25.0",
+    "node-fetch": "~2.6.7",
+    "telegraf": "~4.11.0"
+  },
+  "devDependencies": {
+    "@types/gm": "~1.25.0",
+    "@types/node": "~18.11.9",
+    "@types/node-fetch": "~2.6.2",
+    "prettier": "~2.7.1",
+    "typescript": "~4.8.4"
+  },
+  "keywords": [],
+  "author": "devrave",
+  "license": "ISC"
+}
