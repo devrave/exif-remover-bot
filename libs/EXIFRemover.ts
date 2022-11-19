@@ -1,4 +1,5 @@
 import gm from "gm";
+import { promisify } from "util";
 
 export class EXIFRemover {
   private _gmState: gm.State;
@@ -8,27 +9,15 @@ export class EXIFRemover {
   }
 
   public async getBuffer() {
-    return new Promise<Buffer>((resolve, reject) => {
-      this._gmState.toBuffer((error, buffer) => {
-        if (error) {
-          return reject(error);
-        }
+    const toBuffer = promisify<Buffer>(this._gmState.toBuffer).bind(this._gmState);
 
-        resolve(buffer);
-      });
-    });
+    return toBuffer();
   }
 
   public async getMeta() {
-    return new Promise<gm.ImageInfo>((resolve, reject) => {
-      this._gmState.identify((error, meta) => {
-        if (error) {
-          return reject(error);
-        }
+    const identify = promisify<gm.ImageInfo>(this._gmState.identify).bind(this._gmState);
 
-        resolve(meta);
-      });
-    });
+    return identify();
   }
 
   public async removeMeta() {
