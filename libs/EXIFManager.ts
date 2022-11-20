@@ -1,7 +1,7 @@
 import gm from "gm";
 import { promisify } from "util";
 
-export class EXIFRemover {
+export class EXIFManager {
   private _gmState: gm.State;
 
   public constructor(buffer: Buffer) {

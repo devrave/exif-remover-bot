@@ -1,9 +1,9 @@
 import { Telegraf } from "telegraf";
 import * as dotenv from "dotenv";
 import { fetchAsBuffer } from "./libs/fetch";
-import { EXIFRemover } from "./libs/EXIFRemover";
-import { formatMeta } from "./libs/MetaFormatter";
-import { bytesToMegabytes } from "./libs/utils";
+import { EXIFManager } from "./libs/EXIFManager";
+import { formatMeta } from "./libs/formatMeta";
+import { bytesToMegabytes, orThrow } from "./libs/utils";
 import { BotError } from "./libs/BotError";
 
 dotenv.config();
@@ -40,14 +40,17 @@ bot.on("document", async (context) => {
   }
 
   const fileBuffer = await fetchAsBuffer(fileURL.href);
-  const exifRemover = new EXIFRemover(fileBuffer);
-  const meta = await exifRemover.getMeta();
+  const exifManager = new EXIFManager(fileBuffer);
+  const meta = await orThrow(
+    exifManager.getMeta.bind(exifManager),
+    () => new BotError("Image format is not supported.")
+  );
 
   const metaMessage = formatMeta(meta);
   const fileName = document.file_name ?? `unknown.${meta.format}`;
 
-  await exifRemover.removeMeta();
-  const cleanFileBuffer = await exifRemover.getBuffer();
+  await exifManager.removeMeta();
+  const cleanFileBuffer = await exifManager.getBuffer();
 
   await context.reply(metaMessage);
 
